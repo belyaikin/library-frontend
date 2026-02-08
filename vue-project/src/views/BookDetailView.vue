@@ -152,9 +152,9 @@ const formatDate = (iso: string): string => {
   })
 }
 
-const submitReview = () => {
+const submitReview = async () => {
   if (!book.value || !authStore.user) return
-  reviewsStore.addReview({
+  await reviewsStore.addReview({
     bookId: book.value._id,
     userId: authStore.user._id,
     userName: `${authStore.user.information.firstName} ${authStore.user.information.lastName}`,
@@ -177,8 +177,8 @@ onMounted(async () => {
     if (book.value.authorId) {
       author.value = await booksStore.getAuthorById(book.value.authorId)
     }
-    favoritesStore.loadFavorites()
-    reviewsStore.loadReviews(book.value._id)
+    await favoritesStore.loadFavorites()
+    await reviewsStore.loadReviews(book.value._id)
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Book not found'
   } finally {

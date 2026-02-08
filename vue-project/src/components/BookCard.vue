@@ -52,7 +52,9 @@ const isLoading = ref(false)
 const buySuccess = ref(false)
 
 onMounted(async () => {
-  author.value = await booksStore.getAuthorById(props.book.authorId)
+  if (props.book.authorId) {
+    author.value = await booksStore.getAuthorById(props.book.authorId)
+  }
 })
 
 const handleBuy = async () => {

@@ -61,6 +61,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useFavoritesStore } from '@/stores/favorites'
 import { useBooksStore } from '@/stores/books'
+import { bookAPI, reviewAPI } from '@/api'
 import type { Book } from '@/types'
 
 const router = useRouter()
@@ -69,6 +70,7 @@ const favoritesStore = useFavoritesStore()
 const booksStore = useBooksStore()
 
 const recentBooks = ref<Book[]>([])
+const reviewsCount = ref(0)
 
 const initials = computed(() => {
   if (!authStore.user) return '?'
@@ -80,28 +82,18 @@ const initials = computed(() => {
 const ownedCount = computed(() => authStore.user?.ownedBooks?.length ?? 0)
 const favoritesCount = computed(() => favoritesStore.favoritesCount)
 
-const reviewsCount = computed(() => {
-  if (!authStore.user) return 0
-  const userId = authStore.user._id
-  let count = 0
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i)
-    if (key && key.startsWith('reviews_')) {
-      try {
-        const reviews = JSON.parse(localStorage.getItem(key) || '[]')
-        count += reviews.filter((r: any) => r.userId === userId).length
-      } catch {
-        // skip corrupted entries
-      }
-    }
-  }
-  return count
-})
-
 onMounted(async () => {
   const ids = authStore.user?.ownedBooks?.slice(0, 5) ?? []
   if (ids.length > 0) {
-    recentBooks.value = await booksStore.fetchBooksByIds(ids)
+    const results = await Promise.all(
+      ids.map(id => bookAPI.getById(id).catch(() => null))
+    )
+    recentBooks.value = results.filter((b): b is Book => b !== null)
+  }
+  try {
+    reviewsCount.value = await reviewAPI.getMyCount()
+  } catch {
+    reviewsCount.value = 0
   }
 })
 

@@ -51,9 +51,9 @@ const loadFavoriteBooks = async () => {
   isLoading.value = false
 }
 
-onMounted(() => {
-  favoritesStore.loadFavorites()
-  loadFavoriteBooks()
+onMounted(async () => {
+  await favoritesStore.loadFavorites()
+  await loadFavoriteBooks()
 })
 
 watch(() => favoritesStore.favorites.length, () => {

@@ -168,7 +168,7 @@ onMounted(async () => {
   try {
     const books = await bookAPI.getAll()
     allBooks.value = books
-    const uniqueIds = [...new Set(books.map(b => b.authorId))]
+    const uniqueIds = [...new Set(books.map(b => b.authorId).filter(Boolean))]
     const authors = await Promise.all(
       uniqueIds.map(id => authorAPI.getById(id).catch(() => null))
     )

@@ -126,6 +126,11 @@ export const reviewAPI = {
   delete: async (id: string): Promise<void> => {
     await api.delete(`/review/${id}`);
   },
+
+  getMyCount: async (): Promise<number> => {
+    const response = await api.get('/review/my/count');
+    return response.data.count;
+  },
 };
 
 export const favoritesAPI = {

@@ -1,37 +1,28 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { reviewAPI } from '@/api'
 import type { Review } from '@/types'
 
 export const useReviewsStore = defineStore('reviews', () => {
   const reviews = ref<Review[]>([])
   const currentBookId = ref<string | null>(null)
 
-  const getStorageKey = (bookId: string): string => {
-    return `reviews_${bookId}`
-  }
-
-  const loadReviews = (bookId: string) => {
+  const loadReviews = async (bookId: string) => {
     currentBookId.value = bookId
     try {
-      const raw = localStorage.getItem(getStorageKey(bookId))
-      reviews.value = raw ? JSON.parse(raw) : []
+      reviews.value = await reviewAPI.getByBook(bookId)
     } catch {
       reviews.value = []
     }
   }
 
-  const saveReviews = (bookId: string) => {
-    localStorage.setItem(getStorageKey(bookId), JSON.stringify(reviews.value))
-  }
-
-  const addReview = (review: Omit<Review, 'id' | 'createdAt'>) => {
-    const newReview: Review = {
-      ...review,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    }
-    reviews.value.unshift(newReview)
-    saveReviews(review.bookId)
+  const addReview = async (data: { bookId: string; userId: string; userName: string; rating: number; text: string }) => {
+    const review = await reviewAPI.create({
+      bookId: data.bookId,
+      rating: data.rating,
+      text: data.text,
+    })
+    reviews.value.unshift(review)
   }
 
   const hasUserReviewed = (bookId: string, userId: string): boolean => {
