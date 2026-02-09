@@ -84,7 +84,7 @@ export const bookAPI = {
   },
 
   buy: async (bookId: string): Promise<any> => {
-    const response = await api.put(`/book/buy?id=${bookId}`);
+    const response = await api.put(`/book/buy/${bookId}`);
     return response.data;
   },
 
