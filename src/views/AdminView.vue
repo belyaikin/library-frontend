@@ -166,13 +166,9 @@ onMounted(async () => {
   authorsLoading.value = true
   booksLoading.value = true
   try {
-    const books = await bookAPI.getAll()
+    const [books, authors] = await Promise.all([bookAPI.getAll(), authorAPI.getAll()])
     allBooks.value = books
-    const uniqueIds = [...new Set(books.map(b => b.authorId).filter(Boolean))]
-    const authors = await Promise.all(
-      uniqueIds.map(id => authorAPI.getById(id).catch(() => null))
-    )
-    knownAuthors.value = authors.filter((a): a is Author => a !== null)
+    knownAuthors.value = authors
   } catch {
     // silently fail — authors list is supplementary
   } finally {

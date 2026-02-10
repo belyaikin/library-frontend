@@ -106,6 +106,11 @@ export const authorAPI = {
     return response.data;
   },
 
+  getAll: async (): Promise<Author[]> => {
+    const response = await api.get('/authors');
+    return response.data;
+  },
+
   register: async (data: { firstName: string; lastName: string }): Promise<Author> => {
     const response = await api.post('/author', data);
     return response.data;
