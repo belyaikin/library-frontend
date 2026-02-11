@@ -139,12 +139,12 @@ export const reviewAPI = {
 
 export const favoritesAPI = {
   add: async (bookId: string): Promise<User> => {
-    const response = await api.put(`/favorite/${bookId}`);
+    const response = await api.put(`/book/favorite/${bookId}`);
     return response.data.updatedUser;
   },
 
   remove: async (bookId: string): Promise<User> => {
-    const response = await api.delete(`/favorite/${bookId}`);
+    const response = await api.delete(`/book/favorite/${bookId}`);
     return response.data.updatedUser;
   },
 };
