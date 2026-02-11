@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { favoritesAPI } from '@/api'
+import type { User } from '@/types'
 
 export const useFavoritesStore = defineStore('favorites', () => {
   const favoriteIds = ref<string[]>([])
@@ -12,10 +13,9 @@ export const useFavoritesStore = defineStore('favorites', () => {
       favoriteIds.value = []
       return
     }
-    try {
-      favoriteIds.value = await favoritesAPI.getAll()
-    } catch {
-      favoriteIds.value = []
+    // Load favorites from current user if available
+    if (authStore.user?.ownedBooks) {
+      favoriteIds.value = authStore.user.ownedBooks
     }
   }
 
@@ -28,12 +28,19 @@ export const useFavoritesStore = defineStore('favorites', () => {
   const favoriteBookIds = computed(() => favoriteIds.value)
 
   const toggleFavorite = async (bookId: string) => {
+    const authStore = useAuthStore()
     try {
+      let updatedUser: User
       if (isFavorite(bookId)) {
-        favoriteIds.value = await favoritesAPI.remove(bookId)
+        updatedUser = await favoritesAPI.remove(bookId)
       } else {
-        favoriteIds.value = await favoritesAPI.add(bookId)
+        updatedUser = await favoritesAPI.add(bookId)
       }
+      // Update both the favorites store and auth store
+      if (updatedUser.ownedBooks) {
+        favoriteIds.value = updatedUser.ownedBooks
+      }
+      authStore.user = updatedUser
     } catch {
       // silently fail
     }

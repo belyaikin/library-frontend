@@ -138,19 +138,14 @@ export const reviewAPI = {
 };
 
 export const favoritesAPI = {
-  getAll: async (): Promise<string[]> => {
-    const response = await api.get('/user/favorites');
-    return response.data.favorites;
+  add: async (bookId: string): Promise<User> => {
+    const response = await api.put(`/favorite/${bookId}`);
+    return response.data.updatedUser;
   },
 
-  add: async (bookId: string): Promise<string[]> => {
-    const response = await api.post(`/user/favorites/${bookId}`);
-    return response.data.favorites;
-  },
-
-  remove: async (bookId: string): Promise<string[]> => {
-    const response = await api.delete(`/user/favorites/${bookId}`);
-    return response.data.favorites;
+  remove: async (bookId: string): Promise<User> => {
+    const response = await api.delete(`/favorite/${bookId}`);
+    return response.data.updatedUser;
   },
 };
 
