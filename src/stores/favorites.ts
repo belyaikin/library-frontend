@@ -13,9 +13,9 @@ export const useFavoritesStore = defineStore('favorites', () => {
       favoriteIds.value = []
       return
     }
-    // Load favorites from current user if available
-    if (authStore.user?.ownedBooks) {
-      favoriteIds.value = authStore.user.ownedBooks
+    
+    if (authStore.user?.favoriteBooks) {
+      favoriteIds.value = authStore.user.favoriteBooks
     }
   }
 
@@ -36,9 +36,9 @@ export const useFavoritesStore = defineStore('favorites', () => {
       } else {
         updatedUser = await favoritesAPI.add(bookId)
       }
-      // Update both the favorites store and auth store
-      if (updatedUser.ownedBooks) {
-        favoriteIds.value = updatedUser.ownedBooks
+      
+      if (updatedUser.favoriteBooks) {
+        favoriteIds.value = updatedUser.favoriteBooks
       }
       authStore.user = updatedUser
     } catch {
