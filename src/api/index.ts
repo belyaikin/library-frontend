@@ -124,7 +124,8 @@ export const reviewAPI = {
   },
 
   create: async (data: { bookId: string; rating: number; text: string }): Promise<Review> => {
-    const response = await api.post(`/review/${data.bookId}`, {
+    const response = await api.post('/review', {
+      bookId: data.bookId,
       stars: data.rating,
       body: data.text,
     });
