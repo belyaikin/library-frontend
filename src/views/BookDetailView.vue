@@ -87,22 +87,21 @@
 
       <!-- Reviews List -->
       <div v-if="reviewsStore.reviews.length > 0" class="reviews-list">
-        <div v-for="review in reviewsStore.reviews" :key="review.id" class="review-item card">
+        <div v-for="review in reviewsStore.reviews" :key="review._id" class="review-item card">
           <div class="review-header">
-            <span class="reviewer-name">{{ review.userName }}</span>
-            <span class="review-stars">{{ renderStars(review.rating) }}</span>
-            <span class="review-date">{{ formatDate(review.createdAt) }}</span>
+            <span class="reviewer-name">{{ review.userName || 'Anonymous' }}</span>
+            <span class="review-stars">{{ renderStars(review.stars) }}</span>
             <button
               v-if="authStore.isAuthenticated && review.userId === authStore.user?._id"
-              @click="handleDeleteReview(review.id)"
-              :disabled="deletingReviewId === review.id"
+              @click="handleDeleteReview(review._id)"
+              :disabled="deletingReviewId === review._id"
               class="delete-review-btn"
-              :title="deletingReviewId === review.id ? 'Deleting...' : 'Delete review'"
+              :title="deletingReviewId === review._id ? 'Deleting...' : 'Delete review'"
             >
-              {{ deletingReviewId === review.id ? '...' : '✕' }}
+              {{ deletingReviewId === review._id ? '...' : '✕' }}
             </button>
           </div>
-          <p class="review-text">{{ review.text }}</p>
+          <p class="review-text">{{ review.body }}</p>
         </div>
       </div>
 
@@ -152,14 +151,6 @@ const renderStars = (rating: number): string => {
   const full = Math.floor(rating)
   const empty = 5 - full
   return '\u2605'.repeat(full) + '\u2606'.repeat(empty)
-}
-
-const formatDate = (iso: string): string => {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 
 const submitReview = async () => {
@@ -477,12 +468,6 @@ h1 {
 .review-stars {
   color: var(--color-accent);
   font-size: 14px;
-}
-
-.review-date {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  margin-left: auto;
 }
 
 .delete-review-btn {

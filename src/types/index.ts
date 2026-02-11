@@ -44,13 +44,13 @@ export interface AuthResponse {
 }
 
 export interface Review {
-  id: string;
+  _id: string;
   bookId: string;
   userId: string;
-  userName: string;
-  rating: number;
-  text: string;
-  createdAt: string;
+  stars: number;
+  body: string;
+  userName?: string;
+  createdAt?: string;
 }
 
 export interface FavoriteEntry {

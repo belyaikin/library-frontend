@@ -22,12 +22,20 @@ export const useReviewsStore = defineStore('reviews', () => {
       rating: data.rating,
       text: data.text,
     })
-    reviews.value.unshift(review)
+    const transformedReview: Review = {
+      _id: review._id,
+      bookId: review.bookId,
+      userId: review.userId,
+      stars: review.stars,
+      body: review.body,
+      userName: data.userName,
+    }
+    reviews.value.unshift(transformedReview)
   }
 
   const deleteReview = async (reviewId: string) => {
     await reviewAPI.delete(reviewId)
-    reviews.value = reviews.value.filter(r => r.id !== reviewId)
+    reviews.value = reviews.value.filter(r => r._id !== reviewId)
   }
 
   const hasUserReviewed = (bookId: string, userId: string): boolean => {
@@ -40,7 +48,7 @@ export const useReviewsStore = defineStore('reviews', () => {
 
   const averageRating = computed((): number | null => {
     if (reviews.value.length === 0) return null
-    const sum = reviews.value.reduce((acc, r) => acc + r.rating, 0)
+    const sum = reviews.value.reduce((acc, r) => acc + r.stars, 0)
     return Math.round((sum / reviews.value.length) * 10) / 10
   })
 
