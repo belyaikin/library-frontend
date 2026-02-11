@@ -25,8 +25,17 @@ export const useReviewsStore = defineStore('reviews', () => {
     reviews.value.unshift(review)
   }
 
+  const deleteReview = async (reviewId: string) => {
+    await reviewAPI.delete(reviewId)
+    reviews.value = reviews.value.filter(r => r.id !== reviewId)
+  }
+
   const hasUserReviewed = (bookId: string, userId: string): boolean => {
     return reviews.value.some(r => r.bookId === bookId && r.userId === userId)
+  }
+
+  const getUserReview = (userId: string): Review | undefined => {
+    return reviews.value.find(r => r.userId === userId)
   }
 
   const averageRating = computed((): number | null => {
@@ -40,7 +49,9 @@ export const useReviewsStore = defineStore('reviews', () => {
     currentBookId,
     loadReviews,
     addReview,
+    deleteReview,
     hasUserReviewed,
+    getUserReview,
     averageRating,
   }
 })

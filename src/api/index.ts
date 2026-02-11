@@ -119,22 +119,20 @@ export const authorAPI = {
 
 export const reviewAPI = {
   getByBook: async (bookId: string): Promise<Review[]> => {
-    const response = await api.get(`/review/book/${bookId}`);
+    const response = await api.get(`/review/${bookId}`);
     return response.data;
   },
 
   create: async (data: { bookId: string; rating: number; text: string }): Promise<Review> => {
-    const response = await api.post('/review', data);
+    const response = await api.post(`/review/${data.bookId}`, {
+      stars: data.rating,
+      body: data.text,
+    });
     return response.data;
   },
 
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/review/${id}`);
-  },
-
-  getMyCount: async (): Promise<number> => {
-    const response = await api.get('/review/my/count');
-    return response.data.count;
+  delete: async (reviewId: string): Promise<void> => {
+    await api.delete(`/review/${reviewId}`);
   },
 };
 

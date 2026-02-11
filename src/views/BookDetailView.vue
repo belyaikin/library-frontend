@@ -92,6 +92,15 @@
             <span class="reviewer-name">{{ review.userName }}</span>
             <span class="review-stars">{{ renderStars(review.rating) }}</span>
             <span class="review-date">{{ formatDate(review.createdAt) }}</span>
+            <button
+              v-if="authStore.isAuthenticated && review.userId === authStore.user?._id"
+              @click="handleDeleteReview(review.id)"
+              :disabled="deletingReviewId === review.id"
+              class="delete-review-btn"
+              :title="deletingReviewId === review.id ? 'Deleting...' : 'Delete review'"
+            >
+              {{ deletingReviewId === review.id ? '...' : '✕' }}
+            </button>
           </div>
           <p class="review-text">{{ review.text }}</p>
         </div>
@@ -130,6 +139,7 @@ const buySuccess = ref(false)
 
 const newRating = ref(0)
 const newReviewText = ref('')
+const deletingReviewId = ref<string | null>(null)
 
 const alreadyReviewed = computed(() => {
   if (!book.value || !authStore.user) return false
@@ -163,6 +173,16 @@ const submitReview = async () => {
   })
   newRating.value = 0
   newReviewText.value = ''
+}
+
+const handleDeleteReview = async (reviewId: string) => {
+  if (!confirm('Are you sure you want to delete this review?')) return
+  try {
+    deletingReviewId.value = reviewId
+    await reviewsStore.deleteReview(reviewId)
+  } finally {
+    deletingReviewId.value = null
+  }
 }
 
 const isOwned = computed(() => {
@@ -463,6 +483,27 @@ h1 {
   color: var(--color-text-secondary);
   font-size: 13px;
   margin-left: auto;
+}
+
+.delete-review-btn {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.delete-review-btn:hover:not(:disabled) {
+  border-color: #e53e3e;
+  color: #e53e3e;
+}
+
+.delete-review-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .review-text {
